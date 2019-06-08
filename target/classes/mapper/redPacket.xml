@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.redpacket.dao.UserRedPacketDao">
+
+   <insert id="grapRedPacket" useGeneratedKeys="true" keyProperty="id"
+           parameterType="com.redpacket.pojo.UserRedPacket">
+       insert into tb_user_red_packet(red_packet_id, user_id, amount, grab_time, note)
+       values(#{redPacketId},#{userId},#{amount},now(),#{note})
+   </insert>
+
+    <!--for update数据库内部机制提供的悲观锁，对将要更新的数据加锁-->
+    <select id="getRedPacketForUpdate" parameterType="long" resultType="com.redpacket.pojo.RedPacket">
+        select id, userId,amount,sendDate,total,unitAmount,stock,version,note
+        from tb_red_packet where id=#{id}
+        for update
+    </select>
+
+    <update id="decreaseRedPacketForVersion">
+        update tb_red_packet
+        set stock=stock-1,
+        version =version+1
+        where id=#{id}
+        and version=#{version}
+    </update>
+</mapper>
